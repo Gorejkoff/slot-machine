@@ -148,8 +148,8 @@ wheel3.init();
 
 
 
-let coins = document.querySelector('.coins');
-let text = document.querySelector('.text');
+let coins = document.querySelector('.slot-machine__coins-text');
+let text = document.querySelector('.slot-machine__info');
 let value_data = [];
 let coins_value = 100;
 coins.innerHTML = coins_value;
@@ -191,12 +191,12 @@ function testValue() {
 
 function comparisonValue() {
    if (value_data[0] == value_data[1] && value_data[0] == value_data[2] && value_data[1] == value_data[2]) {
-      text.innerHTML = 'выиграл !!!!!!!';
+      text.innerHTML = 'УРА ТЫ ВЫИГРАЛ !!!';
       coins_value = coins_value + 30;
       coins.innerHTML = coins_value;
    } else if (value_data[0] == value_data[1] || value_data[0] == value_data[2] || value_data[1] == value_data[2]) {
       text.innerHTML = 'Две одинаковые !!!';
-      coins_value = coins_value + 10;
+      coins_value = coins_value + 5;
       coins.innerHTML = coins_value;
    } else if (value_data[0] !== value_data[1] && value_data[0] !== value_data[2] && value_data[1] !== value_data[2]) {
       text.innerHTML = 'Нет совпадений';
@@ -205,15 +205,3 @@ function comparisonValue() {
    }
 }
 
-// вызывает функцию callee не чеще timeout милисекунд
-/* function throttle(callee, timeout) {
-   let timer = null;
-   return function perform(...args) {
-      if (timer) return;
-      timer = setTimeout(() => {
-         callee(...args);
-         clearTimeout(timer);
-         timer = null;
-      }, timeout)
-   }
-} */
