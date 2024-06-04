@@ -108,16 +108,16 @@ class Wheel {
       return this.number(v + a * t);
    }
 
-   // расчёт времени между вызовами функции
+   // расчёт времени
    travelTime = () => {
       this.travel_time = this.number((Date.now() - this.time_to) / 1000);
    }
 
-   /* возвращает тип данных number после округления до целых*/
+   // возвращает тип данных number после округления до целых
    number = (n) => {
       return Number(n.toFixed(4))
    }
-
+   // маркировка выпавшего значения
    activeElement = () => {
       let screen_offset = this.SCREEN.getBoundingClientRect().top;
       for (let i = 0; i < this.IMAGE.length - 1; i++) {
@@ -167,7 +167,6 @@ function testValue() {
          elements.forEach((e) => {
             value_data.push(e.dataset.wheel);
          })
-         console.log(value_data);
          comparisonValue();
          return;
       }
@@ -178,17 +177,31 @@ function testValue() {
 function comparisonValue() {
    if (value_data[0] == value_data[1] && value_data[0] == value_data[2] && value_data[1] == value_data[2]) {
       text.innerHTML = 'УРА ТЫ ВЫИГРАЛ !!!';
-      coins_value = coins_value + 30;
-      coins.innerHTML = coins_value;
+      coinsValue(10)
    } else if (value_data[0] == value_data[1] || value_data[0] == value_data[2] || value_data[1] == value_data[2]) {
       text.innerHTML = 'Две одинаковые !!!';
-      coins_value = coins_value + 5;
-      coins.innerHTML = coins_value;
+      coinsValue(5)
    } else if (value_data[0] !== value_data[1] && value_data[0] !== value_data[2] && value_data[1] !== value_data[2]) {
       text.innerHTML = 'Нет совпадений';
-      coins_value = coins_value - 1;
-      coins.innerHTML = coins_value;
+      coinsValue(-1)
    }
+}
+
+function coinsValue(namber) {
+   let value = coins_value + namber;
+   if (value > coins_value) { increment(value) };
+   if (value < coins_value) { dicrement(value) };
+}
+
+function increment(value) {
+   coins_value++;
+   coins.innerHTML = coins_value;
+   if (value > coins_value) { setTimeout(() => { increment(value) }, 200) }
+}
+function dicrement(value) {
+   coins_value--;
+   coins.innerHTML = coins_value;
+   if (value < coins_value) { setTimeout(() => { dicrement(value) }, 200) }
 }
 
 const SLOT_MACHINE = document.querySelector('.slot-machine-body');
