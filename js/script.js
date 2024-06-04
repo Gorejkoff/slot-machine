@@ -135,16 +135,16 @@ class Wheel {
    }
 }
 
-let audio1 = new Audio('../sound/start.mp3');
-let audio21 = new Audio('../sound/spin.mp3');
+let audio1 = new Audio('sound/start.mp3');
+let audio21 = new Audio('sound/spin.mp3');
 audio21.loop = true;
-let audio22 = new Audio('../sound/spin.mp3');
+let audio22 = new Audio('sound/spin.mp3');
 audio22.loop = true;
-let audio23 = new Audio('../sound/spin.mp3');
+let audio23 = new Audio('sound/spin.mp3');
 audio23.loop = true;
-let audio3 = new Audio('../sound/score.mp3');
-let audio4 = new Audio('../sound/coincidence_2.mp3');
-let audio5 = new Audio('../sound/coincidence_3.mp3');
+let audio3 = new Audio('sound/score.mp3');
+let audio4 = new Audio('sound/coincidence_2.mp3');
+let audio5 = new Audio('sound/coincidence_3.mp3');
 
 let wheel1 = new Wheel('screen-1', 'slot-machine__wheel', 'slot-machine__image', audio21);
 wheel1.init();
@@ -170,6 +170,8 @@ BUTTON_START.addEventListener('click', (event) => {
       next_start = false;
       testValue();
       text.innerHTML = '';
+      audio1.muted = false;
+      audio1.volume = 1;
       audio1.play();
    }
 })
