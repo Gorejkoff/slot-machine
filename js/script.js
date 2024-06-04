@@ -1,6 +1,17 @@
 // строгий режим
 "use strict"
-
+// маркировка PC || MOBILE
+const isMobile = {
+   Android: function () { return navigator.userAgent.match(/Android/i) },
+   BlackBerry: function () { return navigator.userAgent.match(/BlackBerry/i) },
+   iOS: function () { return navigator.userAgent.match(/iPhone|iPad|iPod/i) },
+   Opera: function () { return navigator.userAgent.match(/Opera Mini/i) },
+   Windows: function () { return navigator.userAgent.match(/IEMobile/i) },
+   any: function () {
+      return (isMobile.Android() || isMobile.BlackBerry() || isMobile.iOS() || isMobile.Opera() || isMobile.Windows());
+   }
+};
+const isPC = !isMobile.any();
 
 class Wheel {
    constructor(screen, wheel, image) {
@@ -36,11 +47,8 @@ class Wheel {
    moveWheel = () => {
       this.travelTime();
       this.transform_value = this.transform_value - this.speed_value;
-
-
       this.styleValue = getComputedStyle(this.WHEEL);
       this.gettransform_value = new DOMMatrix(this.styleValue.transform);
-
       // коррекция transform_value при максимальном смещении картинок
       if (parseInt(this.gettransform_value.m42) + this.IMAGE_HEIGHT / 2 <= -this.WHEEL_HEIGHT) {
          this.transform_value = this.transform_value + this.WHEEL_HEIGHT;
@@ -54,33 +62,24 @@ class Wheel {
       if (this.speed_value > this.speed.max) {
          this.speed_value = this.speed.max;
       }
-
-
-
-
       if ((Date.now() - this.start_time) / 1000 > this.time_action) {
          this.speed_value = this.calcSpeed(this.speed_value, this.travel_time, -this.speed.boost);
          this.speed_value < 5 && this.activeElement();
       }
       if (this.speed_value < 5 && this.slowing_finish) {
          this.speed_value = 5;
-         this.WHEEL.style.transition = 'transform 1s cubic-bezier(.02,1,.62,1.01)';
+         this.WHEEL.style.transition = 'transform 1.5s cubic-bezier(0,0,.2,1)';
          this.transform_value = -this.finish_position;
          this.slowing_finish = false;
          this.stop_action = true;
-         setTimeout(() => { this.start_action = true }, 1000)
+         setTimeout(() => { this.start_action = true }, 2000)
       }
-
-
-
       this.addTransform(this.transform_value);
-
       if (!this.stop_action) {
          this.time_to = Date.now();
          requestAnimationFrame(this.moveWheel);
       }
    }
-
 
    start = () => {
       this.stop_action = false;
@@ -119,7 +118,6 @@ class Wheel {
       return Number(n.toFixed(4))
    }
 
-
    activeElement = () => {
       let screen_offset = this.SCREEN.getBoundingClientRect().top;
       for (let i = 0; i < this.IMAGE.length - 1; i++) {
@@ -132,11 +130,7 @@ class Wheel {
          }
       }
    }
-
-
 }
-
-
 
 let wheel1 = new Wheel('screen-1', 'slot-machine__wheel', 'slot-machine__image');
 wheel1.init();
@@ -144,9 +138,6 @@ let wheel2 = new Wheel('screen-2', 'slot-machine__wheel', 'slot-machine__image')
 wheel2.init();
 let wheel3 = new Wheel('screen-3', 'slot-machine__wheel', 'slot-machine__image');
 wheel3.init();
-
-
-
 
 let coins = document.querySelector('.slot-machine__coins-text');
 let text = document.querySelector('.slot-machine__info');
@@ -166,11 +157,7 @@ BUTTON_START.addEventListener('click', (event) => {
       testValue();
       text.innerHTML = '';
    }
-
-
 })
-
-
 
 function testValue() {
    if (wheel1.start_action && wheel2.start_action && wheel3.start_action) {
@@ -188,7 +175,6 @@ function testValue() {
    setTimeout(() => { testValue() }, 500)
 }
 
-
 function comparisonValue() {
    if (value_data[0] == value_data[1] && value_data[0] == value_data[2] && value_data[1] == value_data[2]) {
       text.innerHTML = 'УРА ТЫ ВЫИГРАЛ !!!';
@@ -205,3 +191,80 @@ function comparisonValue() {
    }
 }
 
+const SLOT_MACHINE = document.querySelector('.slot-machine-body');
+if (isPC) SLOT_MACHINE.ondragstart = function () { return false };
+let mousedown = false;
+let start_mouseX;
+let start_mouseY;
+let offset_mouseX;
+let offset_mouseY;
+let rotateX = 0;
+let rotateY = 0;
+const K = 4;
+
+const calc_coordinates = throttle(calcCoordinates, 16.6);
+
+isPC && SLOT_MACHINE.addEventListener('mousedown', mouseDown);
+!isPC && SLOT_MACHINE.addEventListener('touchstart', mouseDown);
+
+isPC && document.addEventListener('mousemove', mouseMove);
+!isPC && document.addEventListener('touchmove', mouseMove);
+
+isPC && document.addEventListener('mouseup', mouseUp);
+!isPC && document.addEventListener('touchend', mouseUp);
+
+function mouseMove(event) {
+   if (mousedown) calc_coordinates(event);
+}
+
+function mouseDown(event) {
+   if (!event.target.closest(".button-start")) {
+      mousedown = true;
+      start_mouseX = getClientX(event);
+      start_mouseY = getClientY(event);
+      offset_mouseX = 0;
+      offset_mouseY = 0;
+   }
+}
+
+function mouseUp() {
+   if (mousedown) {
+      mousedown = false;
+      rotateX = rotateX - offset_mouseX / K;
+      rotateY = rotateY + offset_mouseY / K;
+   }
+}
+
+function calcCoordinates(event) {
+   if (mousedown) {
+      offset_mouseX = start_mouseX - getClientX(event);
+      offset_mouseY = start_mouseY - getClientY(event);
+      rotate()
+   }
+}
+
+function rotate() {
+   document.body.style.setProperty('--rotateY', rotateX - offset_mouseX / K + "deg");
+   document.body.style.setProperty('--rotateX', rotateY + offset_mouseY / K + "deg");
+}
+
+function getClientX(event) {
+   if (!isPC) return event.touches[0].clientX;
+   return event.clientX;
+}
+function getClientY(event) {
+   if (!isPC) return event.touches[0].clientY;
+   return event.clientY;
+}
+// вызываетс функцию callee не чеще timeout милисекунд
+function throttle(callee, timeout) {
+   let timer = null;
+   return function perform(...args) {
+      if (timer) return;
+      timer = setTimeout(() => {
+         callee(...args);
+         clearTimeout(timer);
+         timer = null;
+      }, timeout)
+   }
+}
