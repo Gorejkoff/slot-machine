@@ -10,7 +10,7 @@
 }
 
 body {
-   touch-action: pan-y pan-y;
+   overscroll-behavior-y: none;
 }
 
 .main {
