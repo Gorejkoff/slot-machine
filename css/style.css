@@ -15,6 +15,7 @@ body {
 }
 
 .main {
+   pointer-events: none;
    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
    -webkit-transform-style: preserve-3d;
    transform-style: preserve-3d;
@@ -100,6 +101,7 @@ body {
 }
 
 .slot-machine-body {
+   pointer-events: all;
    will-change: transform;
    --depth: min(100px, 10vmin);
    --size: 100%;
@@ -328,6 +330,8 @@ body {
    gap: min(5px, 0.5vmin);
    border-radius: min(5px, 0.5vmin);
    background-color: #a0a0a0;
+   -webkit-transform: translateZ(1px);
+   transform: translateZ(1px);
 }
 
 .slot-machine__screen {
